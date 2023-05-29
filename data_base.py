@@ -6,6 +6,14 @@ class SalesDatabase:
         self.sales_data = []
 
     def add_sale(self, date: str, dish: str, price: float):
+        # Проверка типов данных
+        if not isinstance(date, str):
+            raise TypeError('Date must be a string in the format dd.mm.yyyy')
+        if not isinstance(dish, str):
+            raise TypeError('Dish must be a string')
+        if not isinstance(price, float):
+            raise TypeError('Price must be a float')
+
         # Добавление информации о чеке в базу данных
         sale = {'date': date, 'dish': dish, 'price': price}
         self.sales_data.append(sale)
@@ -13,6 +21,8 @@ class SalesDatabase:
 
     def get_sale_by_index(self, index: int):
         # Получение информации о чеке по его индексу в списке
+        if not isinstance(index, int):
+            raise TypeError('Index must be an integer')
         if 0 <= index < len(self.sales_data):
             return self.sales_data[index]
         else:
@@ -24,6 +34,8 @@ class SalesDatabase:
 
     def print_sale(self, sale: dict):
         # Вывод информации о конкретном чеке
+        if not isinstance(sale, dict):
+            raise TypeError('Sale must be a dictionary')
         print(f"Date: {sale['date']}nDish: {sale['dish']}nPrice: {sale['price']}")
 
     def print_all_sales(self):
