@@ -1,10 +1,9 @@
 from Menu_class import Menu
 
-
 class Order:
-    __total_summ = 0
     __order_id = -1
-    __dishes_list = {}# [наименование] = [количество, стоимость одного]
+    # [наименование] = [ количество в буфере, стоимость одного, количество завершённых, статус:int]
+    dishes_list = {}
     table_num = 0
 
     def __init__(self, order_id: int, table_num: int):
@@ -12,26 +11,29 @@ class Order:
         self.table_num = table_num
 
     def add_dish(self, name: str, count: int, cost: int):
-        if name in self.__dishes_list.keys():
-            self.__dishes_list[name][0] += count
+        if name in self.dishes_list.keys():
+            self.dishes_list[name][0] += count
+            self.dishes_list[name][3] = -1
         else:
-            self.__dishes_list[name] = [count, cost]
-        self.__total_summ += count * cost
+            self.dishes_list[name] = [count, cost, 0, -1]
 
     def remove_dish(self, name: str, count='all'):
-        if name not in self.__dishes_list.keys():
+        if name not in self.dishes_list.keys():
             print(f'Блюда с названием {name} нет в заказе')
             return
         if count == 'all':
-            self.__total_summ -= self.__dishes_list[name][0] * self.__dishes_list[name][1]
-            self.__dishes_list.pop(name)
+            if self.dishes_list[name][2] == 0:
+                self.dishes_list.pop(name)
+            else:
+                self.dishes_list[name][0] = 0
         elif count.isdigit():
-            if int(count) == self.__dishes_list[name][0]:
-                self.__total_summ -= self.__dishes_list[name][0] * self.__dishes_list[name][1]
-                self.__dishes_list.pop(name)
-            elif 0 < int(count) < self.__dishes_list[name][0]:
-                self.__dishes_list[name][0] -= int(count)
-                self.__total_summ -= int(count) * self.__dishes_list[name][1]
+            if int(count) == self.dishes_list[name][0]:
+                if self.dishes_list[name][2] == 0:
+                    self.dishes_list.pop(name)
+                else:
+                    self.dishes_list[name][0] = 0
+            elif 0 <= int(count) < self.dishes_list[name][0]:
+                self.dishes_list[name][0] -= int(count)
             else:
                 print('Неверно указано количество')
         else:
@@ -39,9 +41,27 @@ class Order:
 
     def print(self):
         print('Номер стола', self.table_num)
-        for dish, data in self.__dishes_list.items():
-            print(dish, ':', f'{data[0]} * {data[1]}')
-        print(f'Total summ: {self.__total_summ}')
+        print('Заверенные:')
+        for dish, data in self.dishes_list.items():
+            if data[3] == 1:
+                print(' ', dish, ':', f'{data[2]} * {data[1]} готовы')
+            elif data[3] == 0:
+                print(' ', dish, ':', f'{data[2]} * {data[1]} готовятся')
+        print('Буфер для отправления:')
+        for dish, data in self.dishes_list.items():
+            if data[3] == -1:
+                print(' ', dish, ':', f'{data[0]}  * {data[1]}')
+
+    def get_check(self):
+        for item in self.dishes_list:
+            if item[1][3] != 1:
+                print('Заказ ещё не завершён')
+                return
+
+        total_summ = 0
+        for item in self.dishes_list:
+            total_summ += item[1][1] * item[1][2]
+        return f'{self.dishes_list}\n {total_summ}'
 
     @property
     def get_id(self):
@@ -58,7 +78,10 @@ class OrderTerminal:
         return cls._instance
 
     def set_menu(self, menu: Menu):
-        self._cur_menu = menu
+        if len(menu.dishes()) != 0:
+            self._cur_menu = menu
+        else:
+            print('Данное меню пустое. Подключение не осуществилось.')
 
     def add_dishes_to_order(self, cur_order: Order):
         self._cur_menu.print()
@@ -69,6 +92,19 @@ class OrderTerminal:
             dish_data = list(input_str.split(':'))
             if len(dish_data) == 2 and dish_data[0] in self._cur_menu.dishes() and dish_data[1].isdigit():
                     cur_order.add_dish(dish_data[0], int(dish_data[1]), self._cur_menu.get_price(dish_data[0]))
+            input_str = input().rstrip()
+
+    def remove_dishes_from_order(self, cur_order: Order):
+        cur_order.print()
+        print('Введите по очереди названия блюд "Название:количество" , завершение ввода "end"')
+
+        input_str = input().rstrip()
+        while input_str != 'end':
+            dish_data = list(input_str.split(':'))
+            if len(dish_data) == 2:
+                cur_order.remove_dish(dish_data[0], dish_data[1])
+            else:
+                cur_order.remove_dish(dish_data[0])
             input_str = input().rstrip()
 
     def create_order(self, table_num: int):
@@ -82,6 +118,17 @@ class OrderTerminal:
 
         self.__orders_list[table_num] = Order(self.__next_id, table_num)
         self.__next_id += 1
+
+    def send_order(self, cur_order: Order):
+        import Kitchen_class
+        self.__cook_term = Kitchen_class.CookingTerminal()
+        self.__cook_term.add_tasks(cur_order)
+        self.__cook_term.get_info()
+
+    def get_ready_dishes(self, ready_dishes: list[str, list[int]]):
+        for task in ready_dishes:
+            for number in task[1]:
+                self.__orders_list[number].dishes_list[task[0]][3] = 1
 
     def open_menu(self):
         while True:
@@ -119,6 +166,7 @@ class OrderTerminal:
             print('Опции:\n'
                   '  add - Добавить блюда\n'
                   '  del - удалить блюда из заказа\n'
+                  '  send - отправить буфер на кухню\n'
                   '  complete - завершить заказ и выслать чек\n'
                   '  close - выйти из меню')
             print('Информация о заказе :')
@@ -128,21 +176,19 @@ class OrderTerminal:
 
             if command == 'add':
                 self.add_dishes_to_order(self.__orders_list[table_num])
-            elif command[0] == 'del':
-                pass
-                #self.remove_dishes_from_order()
+            elif command == 'del':
+                self.remove_dishes_from_order(self.__orders_list[table_num])
+            elif command == 'send':
+                self.send_order(self.__orders_list[table_num])
             elif command == 'complete':
-                pass
+                print(self.__orders_list[table_num].get_check())
+                self.__orders_list.pop(table_num)
+                return
             elif command == 'close':
                 return
             else:
                 print('Неверная команда')
 
 
-
-a = Menu('menu_file.txt')
-b = OrderTerminal()
-b.set_menu(a)
-#b.open_menu()
 
 
