@@ -5,7 +5,7 @@ class WarehouseManager:
     def __init__(self):
         self.warehouse = Warehouse()  # Создание объекта склада при инициализации менеджера
 
-    def create_order(self, products: List[Product]) -> Order:
+    def create_order(self, products: List[Product]) -> Product_order:
         """
         Создает новый заказ на основе переданных товаров и обрабатывает его на складе.
 
@@ -15,7 +15,7 @@ class WarehouseManager:
         Returns:
             Созданный заказ.
         """
-        order = Order(products)  # Создание объекта заказа на основе переданных товаров
+        order = Product_order(products)  # Создание объекта заказа на основе переданных товаров
         self.warehouse.process_order(order)  # Обработка заказа складом
         return order
 
@@ -68,13 +68,13 @@ class Product:
         self.expiration_date = expiration_date
 
 
-class Order:
+class Product_order:
     def __init__(self, product_list: List[Product]):
         """
         Инициализация объекта заказа.
 
         Args:
-            product_list: Список товаров и их количество в заказе.
+            product_list: Список товаров и их количество в заказе.  
         """
         self.id = self.generate_order_id()  # Генерация идентификатора заказа
         self.date = datetime.now()  # Дата оформления заказа (текущая дата и время)
@@ -114,7 +114,7 @@ class Warehouse:
         """
         self.product_list.remove(product)
 
-    def get_orders(self) -> List[Order]:
+    def get_orders(self) -> List[Product_order]:
         """
         Возвращает список всех заказов на складе.
 
@@ -123,7 +123,7 @@ class Warehouse:
         """
         return self.orders
 
-    def get_order(self, order_id: int) -> Order:
+    def get_order(self, order_id: int) -> Product_order:
         """
         Возвращает заказ по его идентификатору.
 
@@ -138,7 +138,7 @@ class Warehouse:
                 return order
         return None
 
-    def process_order(self, order: Order):
+    def process_order(self, order: Product_order):
         """
         Обрабатывает заказ и добавляет его в список заказов.
 
