@@ -9,28 +9,27 @@ class Order:
     def __init__(self, order_id: int, table_num: int):
         self.__order_id = order_id
         self.table_num = table_num
-        # [наименование] = [ количество в буфере, стоимость одного, количество завершённых, статус:int]
+        # [наименование] = [ количество в буфере, стоимость одного, количество завершённых, количество на кухне]
         self.dishes_list = {}
 
     def add_dish(self, name: str, count: int, cost: int):
         if name in self.dishes_list.keys():
             self.dishes_list[name][0] += count
-            self.dishes_list[name][3] = -1
         else:
-            self.dishes_list[name] = [count, cost, 0, -1]
+            self.dishes_list[name] = [count, cost, 0, 0]
 
     def remove_dish(self, name: str, count='all'):
         if name not in self.dishes_list.keys():
             print(f'Блюда с названием {name} нет в заказе')
             return
         if count == 'all':
-            if self.dishes_list[name][2] == 0:
+            if self.dishes_list[name][2] == 0 and self.dishes_list[name][3] == 0:
                 self.dishes_list.pop(name)
             else:
                 self.dishes_list[name][0] = 0
         elif count.isdigit():
             if int(count) == self.dishes_list[name][0]:
-                if self.dishes_list[name][2] == 0:
+                if self.dishes_list[name][2] == 0 and self.dishes_list[name][3] == 0:
                     self.dishes_list.pop(name)
                 else:
                     self.dishes_list[name][0] = 0
@@ -45,13 +44,13 @@ class Order:
         print('Номер стола', self.table_num)
         print('Заверенные:')
         for dish, data in self.dishes_list.items():
-            if data[3] == 1:
+            if data[2] != 0:
                 print(' ', dish, ':', f'{data[2]} * {data[1]} готовы')
-            elif data[3] == 0:
-                print(' ', dish, ':', f'{data[2]} * {data[1]} готовятся')
+            if data[3] != 0:
+                print(' ', dish, ':', f'{data[3]} * {data[1]} готовятся')
         print('Буфер для отправления:')
         for dish, data in self.dishes_list.items():
-            if data[3] == -1:
+            if data[0] != 0:
                 print(' ', dish, ':', f'{data[0]}  * {data[1]}')
 
     def get_check(self):
@@ -135,7 +134,8 @@ class OrderTerminal:
     def get_ready_dishes(self, ready_dishes: list[str, list[int]]):
         for task in ready_dishes:
             for number in task[1]:
-                self.__orders_list[number].dishes_list[task[0]][3] = 1
+                self.__orders_list[number].dishes_list[task[0]][2] += self.__orders_list[number].dishes_list[task[0]][3]
+                self.__orders_list[number].dishes_list[task[0]][3] = 0
                 self.__updated_status.add(number)
 
     def open_menu(self):

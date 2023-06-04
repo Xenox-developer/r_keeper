@@ -123,7 +123,7 @@ class CookingTerminal:
             return
         for dish, data in order.dishes_list.items():
             if data[0] > 0:
-                order.dishes_list[dish][2] += order.dishes_list[dish][0]
+                order.dishes_list[dish][3] += order.dishes_list[dish][0]
                 self.tasks_queue.insert([
                                         self._cur_menu.menu_storage[dish][3],  # приоритет = время готовки
                                         dish,                                  # название блюда
@@ -131,7 +131,6 @@ class CookingTerminal:
                                         [order.table_num]                      # номер стола
                                         ])
                 order.dishes_list[dish][0] = 0
-                order.dishes_list[dish][3] = 0
 
     def get_info(self):
         for per in self.__performers_list:

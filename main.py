@@ -9,6 +9,7 @@ class RKeeper:
 
     __activity_indicator = False
 
+    # Блок функций для блока заказа и обработки заказов блюд
     def __init__(self, orders_terminal: Orders.OrderTerminal, cooking_terminal: Kitchen_class.CookingTerminal):
         self.__orders_terminal = orders_terminal
         self.__cooking_terminal = cooking_terminal
@@ -28,6 +29,7 @@ class RKeeper:
             self.__cooking_terminal.tick()
             time.sleep(2)
 
+    # Общий блок управления
     @property
     def indicator(self):
         return self.__activity_indicator
