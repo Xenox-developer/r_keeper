@@ -1,6 +1,7 @@
 import time
 from threading import Thread
 import Orders
+import restaurant_runner_class
 import Menu_class
 
 
@@ -71,11 +72,12 @@ class CookingTerminal:
     specializations_set = set()
     __performers_list = []
     ready_dishes = []  # :[Название, список столиков]
-    order_terminal = Orders.OrderTerminal()
+    runner = restaurant_runner_class.RestaurantRunner()
 
     def __new__(cls):
         if not hasattr(cls, '_instance'):
             cls._instance = super(CookingTerminal, cls).__new__(cls)
+            cls.runner.connect_cooking_terminal(cls._instance)
         return cls._instance
 
     def set_menu(self, menu: Menu_class.Menu):
@@ -98,6 +100,11 @@ class CookingTerminal:
             self.specializations_set.add(specialization)
         self.check_menu()
 
+    def remove_performer(self, performer_name: str):
+        for performer in self.__performers_list:
+            if performer.name == performer_name:
+                self.__performers_list.remove(performer)
+
     def tick(self):
         if not hasattr(self, '_cur_menu'):
             print('К кухне ещё не подключено меню')
@@ -107,7 +114,7 @@ class CookingTerminal:
                 performer.set_task(self.tasks_queue, self._cur_menu)
             performer.tick()
         if self.ready_dishes:
-            self.order_terminal.get_ready_dishes(self.ready_dishes)
+            self.runner.send_ready_dishes(self.ready_dishes)
             self.ready_dishes.clear()
 
     def add_tasks(self, order: Orders.Order):
@@ -131,6 +138,35 @@ class CookingTerminal:
             per.get_info()
         print('Очередь: ', self.tasks_queue.d_queue)
         print(self.ready_dishes)
+
+    def open_menu(self):
+        if not hasattr(self, '_cur_menu'):
+            print('К кухне ещё не подключено меню')
+            return
+        while True:
+            print("______ Меню терминала кухни ______")
+            print(self._cur_menu)
+            print('Опции:\n'
+                  '  ban {имя блюда} - запретить для заказа\n'
+                  '  allow {имя блюда} - разрешить для заказа\n'
+                  '  info - получить информацию\n'
+                  '  close - выйти из меню')
+
+            command = list(input().rstrip().split())
+
+            if len(command) == 2:
+                if command[0] == 'ban':
+                    self._cur_menu.ban_dish(command[1])
+                elif command[0] == 'open':
+                    self._cur_menu.allow_dish(command[1])
+                else:
+                    print('Неверная команда')
+            elif command[0] == 'info':
+                self.get_info()
+            elif command[0] == 'close':
+                return
+            else:
+                print('Неизвестная команда')
 
 
 

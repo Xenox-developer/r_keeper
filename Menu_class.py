@@ -40,6 +40,9 @@ class Menu:
     def get_price(self, name: str):
         return self.menu_storage[name][0]
 
+    def dish_available(self, name: str):
+        return self.menu_storage[name][2]
+
     def dishes(self):
         return self.menu_storage.keys()
 
