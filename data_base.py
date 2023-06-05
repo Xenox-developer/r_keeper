@@ -1,22 +1,23 @@
 import pickle
+from dataclasses import dataclass
+from typing import Dict
+
+
+@dataclass
+class Bill:
+    Id: int
+    date: str
+    dishes_list: Dict[str, list[int, int]]
+    total_summ: int
+
 
 class SalesDatabase:
-    def __init__(self, db_file: str = 'sales_db.pkl'):
+    def init(self, db_file: str = 'sales_db.pkl'):
         self.db_file = db_file
         self.sales_data = []
 
-    def add_sale(self, date: str, dish: str, price: float):
-        # Проверка типов данных
-        if not isinstance(date, str):
-            raise TypeError('Date must be a string in the format dd.mm.yyyy')
-        if not isinstance(dish, str):
-            raise TypeError('Dish must be a string')
-        if not isinstance(price, float):
-            raise TypeError('Price must be a float')
-
-        # Добавление информации о чеке в базу данных
-        sale = {'date': date, 'dish': dish, 'price': price}
-        self.sales_data.append(sale)
+    def add_bill(self, bill: Bill):
+        self.sales_data.append(bill)
         self.save_data()
 
     def get_sale_by_index(self, index: int):
