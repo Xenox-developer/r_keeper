@@ -34,7 +34,7 @@ class RKeeper:
     def indicator(self):
         return self.__activity_indicator
 
-    def open_global_menu(self):
+    def __open_global_menu(self):
         self.__activity_indicator = True
         while True:
             print("______ Меню системы R_Keeper ______")
@@ -60,7 +60,7 @@ class RKeeper:
             print('Меню ещё не подключено. Начало работы невозможно')
             return
         self.__activity_indicator = True
-        t1 = Thread(target=self.open_global_menu)
+        t1 = Thread(target=self.__open_global_menu)
         t2 = Thread(target=self.ping_cooking_terminal)
 
         t1.start()

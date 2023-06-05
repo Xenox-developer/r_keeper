@@ -6,9 +6,17 @@ import Menu_class
 
 
 class DynamicQueue:
-    d_queue = []  # хранит [приоритет, имя, количество, заказчики]
+    """ Псевдо очередь с приоритетом"""
+
+    d_queue = []  # хранит [приоритет, имя, количество, номера столов]
 
     def insert(self, item: list[int, str, int, [int]]):
+        """
+        Не производит перекомпановку, но приоритеты учитываются при вставке нового объекта.
+        Также производится повышение приоритета объектов, перед которыми
+        был вставлен новый объект
+        """
+
         for idx in range(len(self.d_queue)):
             if self.d_queue[idx][1] == item[1]:
                 self.d_queue[idx][2] += item[2]
@@ -30,8 +38,14 @@ class DynamicQueue:
 
 
 class DishPerformer:
-    cur_dish = []  # [название, количество, список заказчиков, время готовки одной порции]
-    start_time = 0
+    """
+    Класс - производящая единица, осуществляющая зависящую от реального времени
+    готовку блюд в соответствии со специализациями
+
+    """
+
+    cur_dish = []  # [название, количество, список столов, время готовки одной порции]
+    start_time = 0  # Время на чала готовки
 
     def __init__(self, ready_dishes_list: list,
                  specializations: list[str],
@@ -41,6 +55,14 @@ class DishPerformer:
         self.name = name
 
     def set_task(self, tasks_queue: DynamicQueue, menu: Menu_class.Menu):
+        """
+        Функция отвечает за получение задания из очереди, в соотвецтвии со
+        своими специализациями
+
+        :arg
+            tasks_queue - экземпляр DynamicQueue, в котором хранятся текущие задачи по готовке
+            menu - экземпляр класса Menu, в котором указаны время готовки.
+        """
         # DynamicQueue : [приоритет, имя, количество, заказчики]
         idx = 0
         while not self.cur_dish and idx < tasks_queue.len:
@@ -52,6 +74,8 @@ class DishPerformer:
             idx += 1
 
     def tick(self):
+        """ Функция осуществляет проверку на истечение времени на готовку"""
+
         if self.cur_dish:
             if time.time() - self.start_time >= self.cur_dish[3] + (self.cur_dish[1] - 1):
                 self.ready_dishes.append([self.cur_dish[0], self.cur_dish[2]])
@@ -88,6 +112,8 @@ class CookingTerminal:
             print('Данное меню пустое. Подключение не осуществилось.')
 
     def check_menu(self):
+        """ Проверяет отметки о доступности блюд в меню в соответствии с доступными терминалу специализациями"""
+
         if not hasattr(self, '_cur_menu'):
             return
         for name in self._cur_menu.menu_storage.keys():
@@ -106,6 +132,12 @@ class CookingTerminal:
                 self.__performers_list.remove(performer)
 
     def tick(self):
+        """
+        Отвечает за исполнение методов tick() у всех DishPerformer,
+        прикреплённых к данному терминалу и проверку их бездействия
+
+        """
+
         if not hasattr(self, '_cur_menu'):
             print('К кухне ещё не подключено меню')
             return
@@ -118,6 +150,12 @@ class CookingTerminal:
             self.ready_dishes.clear()
 
     def add_tasks(self, order: Orders.Order):
+        """
+        Выделяет нужные кухни задания из экземпляра Order и отправляет их
+        соответственно в очередь
+
+        """
+
         if not hasattr(self, '_cur_menu'):
             print('К кухне ещё не подключено меню')
             return
@@ -139,6 +177,8 @@ class CookingTerminal:
         print(self.ready_dishes)
 
     def open_menu(self):
+        """ Меню управления некоторыми методами кухни """
+
         if not hasattr(self, '_cur_menu'):
             print('К кухне ещё не подключено меню')
             return

@@ -74,6 +74,8 @@ class Order:
 
 
 class OrderTerminal:
+    """ Общий терминал для управления заказами"""
+
     __orders_list = {}
     __next_id = 1
     __updated_status = set()
@@ -136,9 +138,17 @@ class OrderTerminal:
         self.__next_id += 1
 
     def send_order(self, cur_order: Order):
+        """ Функция отправляет заказ через курьера на обработку на кухню"""
+
         self.runner.send_order_tasks(cur_order)
 
     def get_ready_dishes(self, ready_dishes: list[str, list[int]]):
+        """ Функция для получения готовых блюд от курьера из кухни
+
+            :arg
+            ready_dishes - список пар (название блюда, номера столов для которых сделано)
+        """
+
         for task in ready_dishes:
             for number in task[1]:
                 self.__orders_list[number].dishes_list[task[0]][2] += self.__orders_list[number].dishes_list[task[0]][3]
@@ -146,6 +156,8 @@ class OrderTerminal:
                 self.__updated_status.add(number)
 
     def open_menu(self):
+        """ Меню управления добавлением заказов"""
+
         while True:
             print("______ Меню терминала заказов ______")
             print('Опции:\n'
@@ -176,6 +188,8 @@ class OrderTerminal:
                 print('Неизвестная команда')
 
     def open_order_menu(self, table_num: int):
+        """Меню управления методами для работы с конкретным заказом"""
+
         if table_num not in self.__orders_list.keys():
             print('Заказа на этот стол нет!')
             return

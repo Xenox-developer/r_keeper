@@ -1,5 +1,7 @@
 
 class Menu:
+    """ Класс для хранения и управления данными о блюдах """
+
     menu_storage = {}  # [название блюда] = [стоимость, категория, наличие, время готовки (сек.)]
 
     def __init__(self, menu_file_name: str, availability=True):
@@ -40,21 +42,31 @@ class Menu:
                 print(' ', dish[0], dish[1][0])
 
     def get_price(self, name: str):
+        """ Получить цену по названию блюда"""
+
         return self.menu_storage[name][0]
 
     def dish_available(self, name: str):
+        """Получить доступность блюда для заказа"""
+
         return self.menu_storage[name][2]
 
     def dishes(self):
+        """ Получить список всех блюд """
+
         return self.menu_storage.keys()
 
     def ban_dish(self, dish_name: str):
+        """ Запретить блюдо для заказа"""
+
         if dish_name in self.menu_storage.keys():
             self.menu_storage[dish_name][2] = False
         else:
             print('Данного блюда нет в меню')
 
     def allow_dish(self, dish_name: str):
+        """ Разрешить блюдо для заказа"""
+
         if dish_name in self.menu_storage.keys():
             self.menu_storage[dish_name][2] = True
         else:
