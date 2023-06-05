@@ -1,5 +1,8 @@
 from Menu_class import Menu
 import restaurant_runner_class
+from data_base import Bill, SalesDatabase
+from typing import Optional
+from datetime import date
 
 
 class Order:
@@ -53,16 +56,17 @@ class Order:
             if data[0] != 0:
                 print(' ', dish, ':', f'{data[0]}  * {data[1]}')
 
-    def get_check(self):
-        for item in self.dishes_list:
-            if item[1][3] != 1:
+    def get_bill(self) -> Optional[Bill]:
+        for item in self.dishes_list.items():
+            if item[1][0] != 0 or item[1][3] !=0 :
                 print('Заказ ещё не завершён')
                 return
-
+        print('Заказ завершён')
         total_summ = 0
-        for item in self.dishes_list:
+        for item in self.dishes_list.items():
+            print(f' {item[0]} : {item[2]} * {item[1]}')
             total_summ += item[1][1] * item[1][2]
-        return f'{self.dishes_list}\n {total_summ}'
+        return Bill(self.__order_id, str(date.today()), self.dishes_list, total_summ)
 
     @property
     def get_id(self):
@@ -86,6 +90,9 @@ class OrderTerminal:
             self._cur_menu = menu
         else:
             print('Данное меню пустое. Подключение не осуществилось.')
+
+    def set_database(self, database: SalesDatabase):
+        self.__database = database
 
     def add_dishes_to_order(self, cur_order: Order):
         self._cur_menu.print()
@@ -197,9 +204,11 @@ class OrderTerminal:
             elif command == 'update':
                 pass
             elif command == 'complete':
-                print(self.__orders_list[table_num].get_check())
-                self.__orders_list.pop(table_num)
-                return
+                bill = self.__orders_list[table_num].get_bill()
+                if bill:
+                    self.__database.add_bill(bill)
+                    self.__orders_list.pop(table_num)
+                    return
             elif command == 'close':
                 return
             else:

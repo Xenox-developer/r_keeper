@@ -20,6 +20,8 @@ class Menu:
             menu.close()
         except FileNotFoundError:
             print('Не удалось найти файл меню')
+        except ValueError:
+            print('Цена и длительность готовки должны быть целочисленным значением')
 
     def __str__(self):
         string = ''
