@@ -1,6 +1,7 @@
 import Kitchen_class
 import Orders
 import Menu_class
+import data_base
 from threading import Thread
 import time
 
@@ -10,9 +11,12 @@ class RKeeper:
     __activity_indicator = False
 
     # Блок функций для блока заказа и обработки заказов блюд
-    def __init__(self, orders_terminal: Orders.OrderTerminal, cooking_terminal: Kitchen_class.CookingTerminal):
+    def __init__(self, orders_terminal: Orders.OrderTerminal, cooking_terminal: Kitchen_class.CookingTerminal,
+                 database: data_base.SalesDatabase):
         self.__orders_terminal = orders_terminal
         self.__cooking_terminal = cooking_terminal
+        self.__database = database
+        self.__orders_terminal.set_database(database)
 
     def add_dish_performers(self, specializations: list[str], name='executor'):
         self.__cooking_terminal.add_performer(specializations, name=name)
@@ -23,6 +27,7 @@ class RKeeper:
     def set_restaurant_menu(self, menu:Menu_class.Menu):
         self.__orders_terminal.set_menu(menu)
         self.__cooking_terminal.set_menu(menu)
+
 
     def ping_cooking_terminal(self):
         while self.__activity_indicator:
@@ -72,7 +77,8 @@ class RKeeper:
 menu = Menu_class.Menu('menu_file.txt')
 tem = Kitchen_class.CookingTerminal()
 orders = Orders.OrderTerminal()
-main_class = RKeeper(orders, tem)
+data = data_base.SalesDatabase('sales_data.txt')
+main_class = RKeeper(orders, tem, data)
 main_class.add_dish_performers(['Супы', 'Салаты', 'Закуски'], name='повар-1')
 main_class.add_dish_performers(['Супы'], name='повар-2')
 main_class.set_restaurant_menu(menu)
