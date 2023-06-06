@@ -2,6 +2,7 @@ import Kitchen_class
 import Orders
 import Menu_class
 import data_base
+import visitor_data
 from threading import Thread
 import time
 
@@ -12,11 +13,13 @@ class RKeeper:
 
     # Блок функций для блока заказа и обработки заказов блюд
     def __init__(self, orders_terminal: Orders.OrderTerminal, cooking_terminal: Kitchen_class.CookingTerminal,
-                 database: data_base.SalesDatabase):
+                 sale_database: data_base.SalesDatabase, v_database: visitor_data.VisitorDatabase):
         self.__orders_terminal = orders_terminal
         self.__cooking_terminal = cooking_terminal
-        self.__database = database
-        self.__orders_terminal.set_database(database)
+        self.__sale_database = sale_database
+        self.__visitors_database = v_database
+        self.__vs_menu = visitor_data.VisitorMenu(self.__visitors_database)
+        self.__orders_terminal.set_database(sale_database, v_database)
 
     def add_dish_performers(self, specializations: list[str], name='executor'):
         self.__cooking_terminal.add_performer(specializations, name=name)
@@ -46,6 +49,8 @@ class RKeeper:
             print('Опции:\n'
                   '  1 - Открыть меню Терминала кухни\n'
                   '  2 - Открыть меню терминала заказов\n'
+                  '  3 - Открыть меню базы данных для продаж блюд\n'
+                  '  4 - Открыть меню базы данных посетителей\n'
                   '  close - выйти из меню')
 
             command = input().rstrip()
@@ -54,6 +59,10 @@ class RKeeper:
                 self.__cooking_terminal.open_menu()
             elif command == '2':
                 self.__orders_terminal.open_menu()
+            elif command == '3':
+                self.__sale_database.open_menu()
+            elif command == '4':
+                self.__vs_menu.open_menu()
             elif command == 'close':
                 self.__activity_indicator = False
                 return
@@ -78,7 +87,8 @@ menu = Menu_class.Menu('menu_file.txt')
 tem = Kitchen_class.CookingTerminal()
 orders = Orders.OrderTerminal()
 data = data_base.SalesDatabase('sales_data.txt')
-main_class = RKeeper(orders, tem, data)
+vis_data = visitor_data.VisitorDatabase('visitors.txt')
+main_class = RKeeper(orders, tem, data, vis_data)
 main_class.add_dish_performers(['Супы', 'Салаты', 'Закуски'], name='повар-1')
 main_class.add_dish_performers(['Супы'], name='повар-2')
 main_class.set_restaurant_menu(menu)

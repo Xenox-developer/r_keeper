@@ -1,7 +1,7 @@
 from Menu_class import Menu
 import restaurant_runner_class
 from data_base import Bill, SalesDatabase
-from visitor_data import Visitor, VisitorDatabase
+from visitor_data import VisitorDatabase
 from typing import Optional
 from datetime import date
 
@@ -65,8 +65,10 @@ class Order:
         print('Заказ завершён')
         total_summ = 0
         for item in self.dishes_list.items():
-            print(f' {item[0]} : {item[2]} * {item[1]}')
+            print(f' {item[0]} : {item[1][2]} * {item[1][1]}')
+            self.dishes_list[item[0]] = item[1][1:3]
             total_summ += item[1][1] * item[1][2]
+        print('Общая сумма', total_summ)
         return Bill(self.__order_id, str(date.today()), self.dishes_list, total_summ)
 
     @property
@@ -229,7 +231,7 @@ class OrderTerminal:
                         print('данные по персоне введены неверно')
                         phone_number = input().rstrip()
 
-                    points = self.__visitors_database.get_loyalty_points(self, phone_number)
+                    points = self.__visitors_database.get_loyalty_points(phone_number)
                     
                     if points == -1:
                         print('Так как вы ранее не были зарегистрированы в системе введите имя и фамилию')
@@ -239,7 +241,7 @@ class OrderTerminal:
                             data = input().rstrip().split()
                         self.__visitors_database.add_visitor(phone_number, data[0], data[1])
                         self.__visitors_database.increase_loyalty_points(phone_number,
-                                                                         100 * ( (bill.total_summ) % 1000) )
+                                                                         100 * ( (bill.total_summ) // 1000) )
                     else:
                         print('Сейчас вам доступно',points,'баллов')
                         print('Введите количество, которое хотите использовать, но не больше общей суммы заказа')

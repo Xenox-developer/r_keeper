@@ -1,0 +1,6 @@
+Customers:
+1010101010,fg,fg
+1010101010,dd,gg
+Loyalty Points:
+1010101010,68000
+Discount Info:
