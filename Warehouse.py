@@ -19,7 +19,7 @@ class Order_product:
     status: str = "В обработке"
 
 class WarehouseManager:
-    def __init__(self):
+    def __init__(self, db_file: str):
         self.products = []
         self.orders = []
         self.db_file = "data.txt"  # Имя файла для сохранения данных
