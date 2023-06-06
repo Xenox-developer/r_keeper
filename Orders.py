@@ -227,5 +227,17 @@ class OrderTerminal:
                 return
             else:
                 print('Неизвестная команда')
+        
+    def print_loyalty_points(self, phone_number):
+        # Получение информации о посетителе
+        visitor = self.get_visitor_info(phone_number)
+
+        # Проверка, что посетитель найден
+        if visitor is not None:
+            # Получение количества баллов лояльности
+            loyalty_points = self.loyalty_points.get(phone_number, 0)
+            print(f"Количество баллов лояльности посетителя: {loyalty_points}")
+        else:
+            print("Посетитель не найден")
 
 
