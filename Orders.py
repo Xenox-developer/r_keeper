@@ -1,6 +1,7 @@
 from Menu_class import Menu
 import restaurant_runner_class
 from data_base import Bill, SalesDatabase
+from visitor_data import Visitor, VisitorDatabase
 from typing import Optional
 from datetime import date
 
@@ -93,8 +94,9 @@ class OrderTerminal:
         else:
             print('Данное меню пустое. Подключение не осуществилось.')
 
-    def set_database(self, database: SalesDatabase):
-        self.__database = database
+    def set_database(self, s_database: SalesDatabase, v_database: VisitorDatabase):
+        self.__sale_database = s_database
+        self.__visitors_database = v_database
 
     def add_dishes_to_order(self, cur_order: Order):
         self._cur_menu.print()
@@ -219,8 +221,35 @@ class OrderTerminal:
                 pass
             elif command == 'complete':
                 bill = self.__orders_list[table_num].get_bill()
-                if bill:
-                    self.__database.add_bill(bill)
+                if bill:  # Если заказ закрыт
+                    print('Введите пожалуйста номер телефона для системы лояльности :')
+                    phone_number = input().rstrip()
+                    while len(phone_number) != 10 or not phone_number.isdigit():
+                        print('данные по персоне введены неверно')
+                        phone_number = input().rstrip()
+
+                    points = self.__visitors_database.***
+                    if points == -1:
+                        print('Так как вы ранее не были зарегистрированы в системе введите имя и фамилию')
+                        data = input().rstrip().split()
+                        while len(data) < 2 or not(data[0].isalpha()) or not(data[0].isalpha()):
+                            print('Неверный формат ввода')
+                            data = input().rstrip().split()
+                        self.__visitors_database.add_visitor(phone_number, data[0], data[1])
+                        self.__visitors_database.increase_loyalty_points(phone_number,
+                                                                         100 * ( (bill.total_summ) % 1000) )
+                    else:
+                        print('Сейчас вам доступно',points,'баллов')
+                        print('Введите количество, которое хотите использовать, но не больше общей суммы заказа')
+                        used_points = input().rstrip()
+                        while not(used_points.isdigit()) or int(used_points) > min(points, bill.total_summ):
+                            print('Неверный ввод количества. Повторите ввод :')
+                            used_points = input().rstrip()
+                        if int(used_points) > 0:
+                            self.__visitors_database.use_loyalty_points(phone_number, int(used_points))
+                            bill.total_summ -= int(used_points)
+
+                    self.__sale_database.add_bill(bill)
                     self.__orders_list.pop(table_num)
                     return
             elif command == 'close':

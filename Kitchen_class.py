@@ -206,30 +206,3 @@ class CookingTerminal:
                 return
             else:
                 print('Неизвестная команда')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# t1 = Thread(target=reader_1, args=(a,))
-# t2 = Thread(target=reader_2, args=(a,))
-#
-# t1.start()
-# t2.start()
-# t1.join()
-# t2.join()
