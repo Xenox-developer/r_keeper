@@ -1,6 +1,7 @@
 Customers:
 1010101010,fg,fg
 1010101010,dd,gg
+123214,sd,fs
 Loyalty Points:
 1010101010,68000
 Discount Info:

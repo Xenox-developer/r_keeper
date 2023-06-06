@@ -20,9 +20,10 @@ class Order_product:
 
 class WarehouseManager:
     def __init__(self, db_file: str):
+        self.db_file = db_file  # Имя файла для сохранения данных
         self.products = []
         self.orders = []
-        self.db_file = db_file  # Имя файла для сохранения данных
+        self.load_data()  # Загрузка данных из файла при создании экземпляра класса
     
     def add_product(self, product: Product):
         self.products.append(product)
@@ -38,11 +39,13 @@ class WarehouseManager:
     
     def create_order(self, order: Order_product):
         self.orders.append(order)
-    
+        self.save_data()
+
     def change_order_status(self, order_id: int, new_status: str):
         for order in self.orders:
             if order.id == order_id:
                 order.status = new_status
+                self.save_data()
                 break
     
     def get_all_orders(self):
@@ -289,6 +292,7 @@ class WarehouseMenu:
             print(f"{index+1}. Заказ ID: {order.id}, Дата: {order.date}, Статус: {order.status}")
 
 # Пример использования
-warehouse_manager = WarehouseManager()
-menu = WarehouseMenu(warehouse_manager)
-menu.open_menu()
+warehouse_data = WarehouseManager('warehouse_products.txt')
+w_menu = WarehouseMenu(warehouse_data)
+w_menu.open_menu()
+
