@@ -105,3 +105,103 @@ class VisitorDatabase:
                     elif current_section == "Discount Info":
                         phone_number, discount_info = line.split(",", 1)
                         self.discount_info[phone_number] = discount_info  # Добавление информации о скидке в словарь
+    
+
+class VisitorMenu:
+    def __init__(self, visitor_database):
+        self.visitor_database = visitor_database
+
+    def open_menu(self):
+
+    # Меню управления информацией о клиенте
+    
+        options = {
+            "1": self.add_visitor,
+            "2": self.remove_visitor,
+            "3": self.add_loyalty_points,
+            "4": self.use_loyalty_points,
+            "5": self.view_loyalty_points,
+            "6": self.add_discount,
+            "7": self.remove_discount,
+            "8": self.print_visitor_list,
+            "9": lambda: None
+        }
+
+
+        while True:
+            print("______ Меню управления информацией о клиенте ______")
+            print("Опции:\n"
+                "  1 - Добавить пользователя\n"
+                "  2 - Удалить пользователя\n"
+                "  3 - Добавить баллы лояльности\n"
+                "  4 - Использовать баллы лояльности\n"
+                "  5 - Посмотреть баллы лояльности\n"
+                "  6 - Добавить скидку\n"
+                "  7 - Удалить скидку\n"
+                "  8 - Вывести список пользователей\n"
+                "  9 - Выйти из меню")
+
+            command = input("Введите номер опции: ")
+
+            if command in options:
+                options[command]()
+                if command == "9":
+                    return
+            else:
+                print("Неверная команда. Пожалуйста, выберите опцию от 1 до 9.")
+
+    def add_visitor(self):
+        phone_number = input("Введите номер телефона клиента: ")
+        first_name = input("Введите имя клиента: ")
+        last_name = input("Введите фамилию клиента: ")
+        self.visitor_database.add_visitor(phone_number, first_name, last_name)
+        print("Клиент успешно добавлен.")
+
+    def remove_visitor(self):
+        phone_number = input("Введите номер телефона клиента, которого необходимо удалить: ")
+        self.visitor_database.remove_visitor(phone_number)
+        print("Клиент успешно удален.")
+
+    def add_loyalty_points(self):
+        phone_number = input("Введите номер телефона клиента: ")
+        points = int(input("Введите количество баллов лояльности для добавления: "))
+        self.visitor_database.increase_loyalty_points(phone_number, points)
+        print("Баллы лояльности успешно добавлены.")
+
+    def use_loyalty_points(self):
+        phone_number = input("Введите номер телефона клиента: ")
+        points = int(input("Введите количество баллов лояльности для использования: "))
+        if self.visitor_database.use_loyalty_points(phone_number, points):
+            print("Баллы лояльности успешно использованы.")
+        else:
+            print("У клиента недостаточно баллов лояльности.")
+
+    def view_loyalty_points(self):
+        phone_number = input("Введите номер телефона клиента: ")
+        points = self.visitor_database.get_loyalty_points(phone_number)
+        print(f"Количество баллов лояльности: {points}")
+
+    def add_discount(self):
+        phone_number = input("Введите номер телефона клиента: ")
+        discount_info = input("Введите информацию о скидке: ")
+        self.visitor_database.add_discount(phone_number, discount_info)
+        print("Информация о скидке успешно добавлена.")
+
+    def remove_discount(self):
+        phone_number = input("Введите номер телефона клиента: ")
+        if self.visitor_database.check_discount_validity(phone_number):
+            self.visitor_database.discount_info.pop(phone_number)
+            print("Информация о скидке успешно удалена.")
+        else:
+            print("У клиента нет информации о скидке.")
+
+    def print_visitor_list(self):
+        print("Список клиентов:")
+        for visitor in self.visitor_database.customers:
+            print(f"Номер телефона: {visitor.phone_number}, Имя: {visitor.first_name}, Фамилия: {visitor.last_name}")
+
+
+# Пример использования
+# database = VisitorDatabase("database.txt")
+# menu = VisitorMenu(database)
+# menu.open_menu()
