@@ -12,7 +12,7 @@ class Product:
     expiration_date: date
 
 @dataclass
-class Order:
+class Order_product:
     id: int
     date: date
     product_list: List[Product] = field(default_factory=list)
@@ -36,7 +36,7 @@ class WarehouseManager:
         return self.products
         
     
-    def create_order(self, order: Order):
+    def create_order(self, order: Order_product):
         self.orders.append(order)
     
     def change_order_status(self, order_id: int, new_status: str):
@@ -86,7 +86,7 @@ class WarehouseManager:
                             product = Product(name, category, int(quantity), float(price), date.fromisoformat(arrival_date), date.fromisoformat(expiration_date))
                             product_list.append(product)
                         order_status = order_data[3]
-                        order = Order(order_id, order_date, product_list, order_status)
+                        order = Order_product(order_id, order_date, product_list, order_status)
                         self.orders.append(order)
 
 
@@ -235,7 +235,7 @@ class WarehouseMenu:
                 product_list.append(Product(product.name, product.category, quantity, product.price, product.arrival_date, product.expiration_date))
                 print("Товар успешно добавлен в заказ.")
 
-        order = Order(order_id, date.fromisoformat(order_date), product_list)
+        order = Order_product(order_id, date.fromisoformat(order_date), product_list)
         self.warehouse_manager.create_order(order)
         print("Заказ успешно создан.")
 
