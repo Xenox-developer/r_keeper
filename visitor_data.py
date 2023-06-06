@@ -202,6 +202,6 @@ class VisitorMenu:
 
 
 # Пример использования
-# database = VisitorDatabase("database.txt")
-# menu = VisitorMenu(database)
-# menu.open_menu()
+database = VisitorDatabase("database.txt")
+menu = VisitorMenu(database)
+menu.open_menu()
