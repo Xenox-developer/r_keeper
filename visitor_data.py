@@ -33,6 +33,12 @@ class VisitorDatabase:
             if visitor.phone_number == phone_number:
                 return visitor
         return None
+    
+    def get_loyalty_points(self, phone_number: str) -> int:
+        # Получение количества баллов лояльности по номеру телефона
+        if phone_number in self.loyalty_points:
+            return self.loyalty_points[phone_number]
+        return -1
 
     def increase_loyalty_points(self, phone_number: str, points: int):
         # Увеличение баллов лояльности у посетителя на основе номера телефона
