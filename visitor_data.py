@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class Visitor:
     id: int  # Идентификатор посетителя
@@ -11,7 +10,7 @@ class Visitor:
 
 class VisitorDatabase:
     def __init__(self, db_file: str):
-        self.db_file = db_file # Путь к файлу базы данных
+        self.db_file = db_file  # Путь к файлу базы данных
         self.visitors = []  # Список объектов Visitor для хранения информации о посетителях
         self.loyalty_points = {}  # Словарь для хранения баллов лояльности посетителей
         self.registration_info = {}  # Словарь для хранения информации о регистрации посетителей
@@ -78,3 +77,19 @@ class VisitorDatabase:
                     self.visitors.append(visitor)  # Чтение данных из файла и создание объектов Visitor для каждого посетителя
         except FileNotFoundError:
             pass  # Если файл не найден, пропускаем загрузку данных
+
+    def get_loyalty_points_by_name(self, first_name: str, last_name: str):
+        for visitor in self.visitors:
+            if visitor.first_name == first_name and visitor.last_name == last_name:
+                visitor_id = visitor.id
+                if visitor_id in self.loyalty_points:
+                    return self.loyalty_points[visitor_id]
+        return -1  # Возвращает -1, если посетитель с указанным именем и фамилией не найден
+
+    def add_loyalty_points_by_name(self, first_name: str, last_name: str, points: int):
+        for visitor in self.visitors:
+            if visitor.first_name == first_name and visitor.last_name == last_name:
+                visitor_id = visitor.id
+                self.add_loyalty_points(visitor_id, points)
+                return True
+        return False  # Возвращает False, если посетитель с указанным именем и фамилией не найден
