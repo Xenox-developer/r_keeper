@@ -3,6 +3,7 @@ import Orders
 import Menu_class
 import data_base
 import visitor_data
+import Warehouse
 from threading import Thread
 import time
 
@@ -13,12 +14,15 @@ class RKeeper:
 
     # Блок функций для блока заказа и обработки заказов блюд
     def __init__(self, orders_terminal: Orders.OrderTerminal, cooking_terminal: Kitchen_class.CookingTerminal,
-                 sale_database: data_base.SalesDatabase, v_database: visitor_data.VisitorDatabase):
+                 sale_database: data_base.SalesDatabase, v_database: visitor_data.VisitorDatabase, 
+                 w_database: Warehouse.WarehouseManager):
         self.__orders_terminal = orders_terminal
         self.__cooking_terminal = cooking_terminal
         self.__sale_database = sale_database
         self.__visitors_database = v_database
         self.__vs_menu = visitor_data.VisitorMenu(self.__visitors_database)
+        self.__warehouse = w_database
+        self.__w_menu = Warehouse.WarehouseMenu(self.__warehouse)
         self.__orders_terminal.set_database(sale_database, v_database)
 
     def add_dish_performers(self, specializations: list[str], name='executor'):
@@ -51,6 +55,7 @@ class RKeeper:
                   '  2 - Открыть меню терминала заказов\n'
                   '  3 - Открыть меню базы данных для продаж блюд\n'
                   '  4 - Открыть меню базы данных посетителей\n'
+                  '  5 - Открыть меню базы данных склада\n'
                   '  close - выйти из меню')
 
             command = input().rstrip()
@@ -63,6 +68,8 @@ class RKeeper:
                 self.__sale_database.open_menu()
             elif command == '4':
                 self.__vs_menu.open_menu()
+            elif command == '5':
+                self.__w_menu.open_menu()
             elif command == 'close':
                 self.__activity_indicator = False
                 return
