@@ -229,7 +229,8 @@ class OrderTerminal:
                         print('данные по персоне введены неверно')
                         phone_number = input().rstrip()
 
-                    points = self.__visitors_database.***
+                    points = self.__visitors_database.get_loyalty_points(self, phone_number)
+                    
                     if points == -1:
                         print('Так как вы ранее не были зарегистрированы в системе введите имя и фамилию')
                         data = input().rstrip().split()
