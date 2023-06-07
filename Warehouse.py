@@ -23,7 +23,7 @@ class WarehouseManager:
         self.db_file = db_file  # Имя файла для сохранения данных
         self.products = []
         self.orders = []
-        self.load_data()  # Загрузка данных из файла при создании экземпляра класса
+        #self.load_data()  # Загрузка данных из файла при создании экземпляра класса
     
     def add_product(self, product: Product):
         self.products.append(product)
@@ -292,7 +292,7 @@ class WarehouseMenu:
             print(f"{index+1}. Заказ ID: {order.id}, Дата: {order.date}, Статус: {order.status}")
 
 # Пример использования
-warehouse_data = WarehouseManager('warehouse_products.txt')
-w_menu = WarehouseMenu(warehouse_data)
-w_menu.open_menu()
+# warehouse_data = WarehouseManager('warehouse_products.txt')
+# w_menu = WarehouseMenu(warehouse_data)
+# w_menu.open_menu()
 

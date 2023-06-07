@@ -39,7 +39,7 @@ class SalesDatabase:
         print('Чек ID:', bill.Id)
         print(f"Date: {bill.date}\nDishes: ")
         for name in bill.dishes_list.keys():
-            print(f'  {name}:{bill.dishes_list[name][0]}*{bill.dishes_list[name][0]}')
+            print(f'  {name}:{bill.dishes_list[name][0]}*{bill.dishes_list[name][1]}')
         print(f'Total summ:{bill.total_summ}')
 
     def print_all_sales(self):

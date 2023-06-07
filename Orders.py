@@ -242,6 +242,7 @@ class OrderTerminal:
                         self.__visitors_database.add_visitor(phone_number, data[0], data[1])
                         self.__visitors_database.increase_loyalty_points(phone_number,
                                                                          100 * ( (bill.total_summ) // 1000) )
+                        print('Итоговая сумма: ', bill.total_summ)
                     else:
                         print('Сейчас вам доступно',points,'баллов')
                         print('Введите количество, которое хотите использовать, но не больше общей суммы заказа')
@@ -252,6 +253,9 @@ class OrderTerminal:
                         if int(used_points) > 0:
                             self.__visitors_database.use_loyalty_points(phone_number, int(used_points))
                             bill.total_summ -= int(used_points)
+                        print('Итоговая сумма: ', bill.total_summ)
+                        self.__visitors_database.increase_loyalty_points(phone_number,
+                                                                         100 * ((bill.total_summ) // 1000))
 
                     self.__sale_database.add_bill(bill)
                     self.__orders_list.pop(table_num)
