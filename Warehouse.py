@@ -23,7 +23,7 @@ class WarehouseManager:
         self.db_file = db_file  # Имя файла для сохранения данных
         self.products = []
         self.orders = []
-        #self.load_data()  # Загрузка данных из файла при создании экземпляра класса
+        self.load_data()  # Загрузка данных из файла при создании экземпляра класса
     
     def add_product(self, product: Product):
         self.products.append(product)
@@ -84,8 +84,8 @@ class WarehouseManager:
                         product_list = []
                         products_str = order_data[2].split(";")
                         for product_str in products_str:
-                            product_info = product_str.split(",")
-                            name, category, quantity, price, arrival_date, expiration_date = product_info
+                            #name, category, quantity, price, arrival_date, expiration_date = product_info
+                            name, category, quantity, price, arrival_date, expiration_date = product_str.split(",")
                             product = Product(name, category, int(quantity), float(price), date.fromisoformat(arrival_date), date.fromisoformat(expiration_date))
                             product_list.append(product)
                         order_status = order_data[3]
