@@ -4,52 +4,52 @@ from typing import List
 
 @dataclass
 class Product:
-    name: str
-    category: str
-    quantity: int
-    price: float
-    arrival_date: date
-    expiration_date: date
+    name: str # Название товара
+    category: str # Категория товара
+    quantity: int # Количество товара
+    price: float # Цена товара
+    arrival_date: date # Дата поступления товара
+    expiration_date: date # Дата истечения срока годности товара
 
 @dataclass
 class Order_product:
-    id: int
-    date: date
-    product_list: List[Product] = field(default_factory=list)
-    status: str = "В обработке"
+    id: int # ID заказа
+    date: date # Дата заказа
+    product_list: List[Product] = field(default_factory=list) # Список товаров в заказе, по умолчанию пустой список
+    status: str = "В обработке" # Статус заказа, по умолчанию "В обработке"
 
 class WarehouseManager:
     def __init__(self, db_file: str):
         self.db_file = db_file  # Имя файла для сохранения данных
-        self.products = []
-        self.orders = []
+        self.products = [] # Список товаров
+        self.orders = [] # Список заказов
         self.load_data()  # Загрузка данных из файла при создании экземпляра класса
     
     def add_product(self, product: Product):
-        self.products.append(product)
+        self.products.append(product) # Добавление товара в список товаров
         self.save_data()
     
     def remove_product(self, product: Product):
-        self.products.remove(product)
+        self.products.remove(product) # Удаление товара из списка товаров
         self.save_data()
     
     def get_all_products(self):
-        return self.products
+        return self.products # Возврат списка всех товаров
         
     
     def create_order(self, order: Order_product):
-        self.orders.append(order)
+        self.orders.append(order) # Добавление заказа в список заказов
         self.save_data()
 
     def change_order_status(self, order_id: int, new_status: str):
         for order in self.orders:
-            if order.id == order_id:
-                order.status = new_status
+            if order.id == order_id: # Поиск заказа по ID
+                order.status = new_status # Изменение статуса заказа
                 self.save_data()
                 break
     
     def get_all_orders(self):
-        return self.orders
+        return self.orders # Возврат списка всех заказов
     
     def save_data(self):
         with open(self.db_file, 'w') as f:
